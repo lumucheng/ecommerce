@@ -1,4 +1,4 @@
-package com.ecommerce.application
+package com.ecommerce
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
@@ -9,5 +9,4 @@ class ECommerceDataApplicationTests {
 	@Test
 	fun contextLoads() {
 	}
-
 }

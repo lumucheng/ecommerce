@@ -27,9 +27,8 @@ In Swagger UI, Click on 'Try it out', enter /select the necessary parameters, an
 
 ![Swagger UI](./swagger_example.PNG?raw=true "Swagger UI Example")
 
-P.S. There are some `java.lang.NumberFormatException` exceptions when testing with Swagger UI due to the `ApiParams` annotation.
-
-More discussion can be found here [https://stackoverflow.com/questions/35404329/swagger-documentation-for-spring-pageable-interface](https://stackoverflow.com/questions/35404329/swagger-documentation-for-spring-pageable-interface) 
+To run unit tests, *cd* to root path of the project, and run
+>`$ ./gradlew test`
 
 ## Dependencies
 A few of the dependencies that was used:

@@ -1,7 +1,5 @@
 package com.ecommerce.controller
 
-import com.ecommerce.model.Data
-import com.ecommerce.model.Response
 import com.ecommerce.service.DataService
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
@@ -16,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
+private const val EMPTY_DB_MESSAGE = "Empty database. Ensure CSV file has been uploaded before querying."
+
 @RestController
 @RequestMapping("/api")
 class DataController {
@@ -28,25 +28,24 @@ class DataController {
     @ApiOperation(value = "function to return dataset, with optional pagination")
     @RequestMapping(value = ["/search/all"], method = [(RequestMethod.GET)])
     fun getAll(
-            @ApiParam(value = "page number to retrieve", required = false, defaultValue = "0")
-            @RequestParam(value = "page", required = false, defaultValue = "0")
+            @ApiParam(value = "page number to retrieve", required = false, defaultValue = "1")
+            @RequestParam(value = "page", required = false, defaultValue = "1")
             page: Int,
 
             @ApiParam(value = "size of each page", required = false, defaultValue = "10")
             @RequestParam(value = "size", required = false, defaultValue = "10")
             size: Int)
 
-            : ResponseEntity<List<Data>> {
+            : ResponseEntity<Any> {
 
-        var response: ResponseEntity<List<Data>>
+        var response: ResponseEntity<Any>
 
-        var resultList = dataService.getData(page, size)
-        response = if (resultList.isNotEmpty()) {
+        response = if (dataService.hasData()) {
+            var resultList = dataService.getData(page, size)
             ResponseEntity(resultList, HttpStatus.OK)
         } else {
-            ResponseEntity<List<Data>>(null, HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity<Any>(EMPTY_DB_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR)
         }
-
         return response
     }
 
@@ -57,24 +56,24 @@ class DataController {
             @RequestParam(value = "country", required = true)
             country: String,
 
-            @ApiParam(value = "page number to retrieve", required = false, defaultValue = "0")
-            @RequestParam(value = "page", required = false, defaultValue = "0")
+            @ApiParam(value = "page number to retrieve", required = false, defaultValue = "1")
+            @RequestParam(value = "page", required = false, defaultValue = "1")
             page: Int,
 
             @ApiParam(value = "size of each page", required = false, defaultValue = "10")
             @RequestParam(value = "size", required = false, defaultValue = "10")
             size: Int)
 
-            : ResponseEntity<MutableList<Data?>> {
+            : ResponseEntity<Any> {
 
-        var response: ResponseEntity<MutableList<Data?>>
-        var resultList = dataService.getDataByCountry(country, page, size)
-        response = if (resultList.isNotEmpty()) {
+        var response: ResponseEntity<Any>
+
+        response = if (dataService.hasData()) {
+            var resultList = dataService.getDataByCountry(country, page, size)
             ResponseEntity(resultList, HttpStatus.OK)
         } else {
-            ResponseEntity<MutableList<Data?>>(null, HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity<Any>(EMPTY_DB_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR)
         }
-
         return response
     }
 
@@ -83,13 +82,14 @@ class DataController {
     fun handleFileUpload(
             @ApiParam(value = "file to save. Only CSV files are acceptable", required = true)
             @RequestParam("file") file: MultipartFile)
-            : Response {
+            : ResponseEntity<Any> {
+
         return try {
             dataService.save(file)
-            Response.ok("CSV file upload success!")
+            ResponseEntity<Any>("CSV file uploaded successfully.", HttpStatus.OK)
         } catch (e: Exception) {
             logger.error(e.message)
-            Response.fail("Please ensure the data is formatted correctly")
+            ResponseEntity<Any>("Something went wrong while processing. Please ensure the CSV file is valid.", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 }

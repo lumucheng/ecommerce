@@ -26,6 +26,10 @@ class DataService(private val dataRepository: DataRepository) {
         }
     }
 
+    fun hasData(): Boolean {
+        return dataRepository.count() > 0
+    }
+
     fun getData(page : Int, size: Int): List<Data> {
         val paging: Pageable = PageRequest.of(page, size)
         val dataPages = dataRepository.findAll(paging)

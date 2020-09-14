@@ -27,11 +27,11 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
 	implementation("com.opencsv:opencsv:5.2")
-	implementation("io.springfox:springfox-swagger2:2.9.2")
-	implementation("io.springfox:springfox-swagger-ui:2.9.2")
+	implementation("com.spring4all:swagger-spring-boot-starter:1.9.1.RELEASE")
 
 	runtimeOnly("com.h2database:h2")
 
+	testImplementation("com.ninja-squad:springmockk:2.0.1")
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 	}
