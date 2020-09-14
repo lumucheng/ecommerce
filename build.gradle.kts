@@ -27,6 +27,8 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
 	implementation("com.opencsv:opencsv:5.2")
+	implementation("commons-io:commons-io:2.8.0")
+
 	implementation("com.spring4all:swagger-spring-boot-starter:1.9.1.RELEASE")
 
 	runtimeOnly("com.h2database:h2")

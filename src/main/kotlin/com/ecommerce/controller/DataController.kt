@@ -1,8 +1,10 @@
 package com.ecommerce.controller
 
+import com.ecommerce.constant.APIMessage
 import com.ecommerce.service.DataService
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
+import org.apache.commons.io.FilenameUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-
-private const val EMPTY_DB_MESSAGE = "Empty database. Ensure CSV file has been uploaded before querying."
 
 @RestController
 @RequestMapping("/api")
@@ -44,7 +44,7 @@ class DataController {
             var resultList = dataService.getData(page, size)
             ResponseEntity(resultList, HttpStatus.OK)
         } else {
-            ResponseEntity<Any>(EMPTY_DB_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity<Any>(APIMessage.EMPTY_DB, HttpStatus.INTERNAL_SERVER_ERROR)
         }
         return response
     }
@@ -72,7 +72,7 @@ class DataController {
             var resultList = dataService.getDataByCountry(country, page, size)
             ResponseEntity(resultList, HttpStatus.OK)
         } else {
-            ResponseEntity<Any>(EMPTY_DB_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity<Any>(APIMessage.EMPTY_DB, HttpStatus.INTERNAL_SERVER_ERROR)
         }
         return response
     }
@@ -84,12 +84,17 @@ class DataController {
             @RequestParam("file") file: MultipartFile)
             : ResponseEntity<Any> {
 
-        return try {
-            dataService.save(file)
-            ResponseEntity<Any>("CSV file uploaded successfully.", HttpStatus.OK)
+        var responseEntity =  ResponseEntity<Any>(APIMessage.FILL_UPLOAD_FAILURE, HttpStatus.INTERNAL_SERVER_ERROR)
+
+        try {
+            if (dataService.isCsv(file)) {
+                dataService.save(file)
+                responseEntity  = ResponseEntity<Any>(APIMessage.FILL_UPLOAD_SUCCESS, HttpStatus.OK)
+            }
         } catch (e: Exception) {
             logger.error(e.message)
-            ResponseEntity<Any>("Something went wrong while processing. Please ensure the CSV file is valid.", HttpStatus.INTERNAL_SERVER_ERROR)
         }
+
+        return responseEntity
     }
 }

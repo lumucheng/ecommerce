@@ -3,6 +3,7 @@ package com.ecommerce.service
 import com.ecommerce.helper.CSVHelper
 import com.ecommerce.model.Data
 import com.ecommerce.repository.DataRepository
+import org.apache.commons.io.FilenameUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageRequest
@@ -15,6 +16,10 @@ import java.io.IOException
 class DataService(private val dataRepository: DataRepository) {
 
     private val logger: Logger = LoggerFactory.getLogger(DataService::class.java)
+
+    fun isCsv(file: MultipartFile) : Boolean {
+        return FilenameUtils.isExtension(file.originalFilename, "csv")
+    }
 
     fun save(file: MultipartFile) {
         try {
