@@ -17,7 +17,7 @@ class DataService(private val dataRepository: DataRepository) {
 
     private val logger: Logger = LoggerFactory.getLogger(DataService::class.java)
 
-    fun isCsv(file: MultipartFile) : Boolean {
+    fun isCsv(file: MultipartFile): Boolean {
         return FilenameUtils.isExtension(file.originalFilename, "csv")
     }
 
@@ -35,15 +35,21 @@ class DataService(private val dataRepository: DataRepository) {
         return dataRepository.count() > 0
     }
 
-    fun getData(page : Int, size: Int): List<Data> {
+    fun getData(page: Int, size: Int): List<Data> {
         val paging: Pageable = PageRequest.of(page, size)
         val dataPages = dataRepository.findAll(paging)
         return dataPages.content
     }
 
-    fun getDataByCountry(country:String, page : Int, size: Int): MutableList<Data?> {
+    fun getDataByCountry(country: String, page: Int, size: Int): MutableList<Data?> {
         val paging: Pageable = PageRequest.of(page, size)
         val dataPages = dataRepository.findByCountry(country, paging)
+        return dataPages?.content ?: mutableListOf<Data?>()
+    }
+
+    fun getDataByWildcardField(text: String, page: Int, size: Int): MutableList<Data?> {
+        val paging: Pageable = PageRequest.of(page, size)
+        val dataPages = dataRepository.findByInvoiceNoIgnoreCaseContainingOrStockCodeIgnoreCaseContainingOrDescriptionIgnoreCaseContaining(text, text, text, paging)
         return dataPages?.content ?: mutableListOf<Data?>()
     }
 }

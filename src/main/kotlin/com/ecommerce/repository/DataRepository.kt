@@ -7,5 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 interface DataRepository : JpaRepository<Data, Long> {
     fun findByCountry(country: String, pageable: Pageable?): Page<Data?>?
+    fun findByInvoiceNoIgnoreCaseContainingOrStockCodeIgnoreCaseContainingOrDescriptionIgnoreCaseContaining(
+            invoiceNo: String, stockCode: String, description: String, pageable: Pageable?): Page<Data?>?
 }
 

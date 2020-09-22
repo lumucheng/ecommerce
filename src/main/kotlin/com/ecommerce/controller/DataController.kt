@@ -77,6 +77,34 @@ class DataController {
         return response
     }
 
+    @ApiOperation(value = "function to return dataset, with optional pagination")
+    @RequestMapping(value = ["/search/wildcard"], method = [(RequestMethod.GET)])
+    fun getByWildcard(
+            @ApiParam(value = "text to search for ", required = true)
+            @RequestParam(value = "text", required = true)
+            text: String,
+
+            @ApiParam(value = "page number to retrieve", required = false, defaultValue = "1")
+            @RequestParam(value = "page", required = false, defaultValue = "1")
+            page: Int,
+
+            @ApiParam(value = "size of each page", required = false, defaultValue = "10")
+            @RequestParam(value = "size", required = false, defaultValue = "10")
+            size: Int)
+
+            : ResponseEntity<Any> {
+
+        var response: ResponseEntity<Any>
+
+        response = if (dataService.hasData()) {
+            var resultList = dataService.getDataByWildcardField(text, page, size)
+            ResponseEntity(resultList, HttpStatus.OK)
+        } else {
+            ResponseEntity<Any>(APIMessage.EMPTY_DB, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+        return response
+    }
+
     @ApiOperation(value = "function to accept csv file for querying")
     @RequestMapping(value = ["/upload"], method = [(RequestMethod.POST)])
     fun handleFileUpload(
